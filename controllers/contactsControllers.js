@@ -5,8 +5,6 @@ export const getAllContacts = async (_, res) => {
   try {
     const result = await contactsService.listContacts();
 
-    console.table(result);
-
     res.send(result);
   } catch (error) {
     next(error);
@@ -66,8 +64,3 @@ export const deleteContact = async (req, res, next) => {
     next(error);
   }
 };
-
-// console.log("\x1B[33m req.method ---> \x1b[0m ", req.method);
-// console.log("\x1B[33m req.url ---> \x1b[0m ", req.url);
-// console.log("\x1B[33m req.params ---> \x1b[0m ", req.params);
-// console.log("\x1B[33m req.body ---> \x1b[0m ", req.body);

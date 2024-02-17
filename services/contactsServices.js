@@ -59,10 +59,7 @@ async function updateContactById(contactId, data) {
     return null;
   }
 
-  console.log("data in services", data);
-  console.log("contacts[idx] in services", contacts[idx]);
-
-  contacts[idx] = { id: contactId, ...contacts[idx], ...data };
+  contacts[idx] = { ...contacts[idx], ...data };
 
   await createNewContactsList(contacts);
 
