@@ -1,9 +1,9 @@
 import HttpError from "../helpers/HttpError.js";
-import contactsService from "../services/contactsServices.js";
+import { Contact } from "../models/contact.js";
 
-export const getAllContacts = async (_, res) => {
+export const getAllContacts = async (_, res, next) => {
   try {
-    const result = await contactsService.listContacts();
+    const result = await Contact.find({});
 
     res.send(result);
   } catch (error) {
@@ -13,7 +13,7 @@ export const getAllContacts = async (_, res) => {
 
 export const getOneContact = async (req, res, next) => {
   try {
-    const result = await contactsService.getContactById(req.params.id);
+    const result = await Contact.findById(req.params.id);
 
     if (!result) {
       throw HttpError(404);
@@ -27,7 +27,7 @@ export const getOneContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const result = await contactsService.addContact(req.body);
+    const result = await Contact.create(req.body);
 
     res.status(201).send(result);
   } catch (error) {
@@ -38,7 +38,26 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contactsService.updateContactById(id, req.body);
+
+    const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (!result) {
+      throw HttpError(404);
+    }
+
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const result = await Contact.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
 
     if (!result) {
       throw HttpError(404);
@@ -53,7 +72,8 @@ export const updateContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contactsService.removeContact(id);
+
+    const result = await Contact.findByIdAndDelete(id);
 
     if (!result) {
       throw HttpError(404);
@@ -64,8 +84,3 @@ export const deleteContact = async (req, res, next) => {
     next(error);
   }
 };
-
-// console.log("\x1B[33m req.method ---> \x1b[0m ", req.method);
-// console.log("\x1B[33m req.url ---> \x1b[0m ", req.url);
-// console.log("\x1B[33m req.params ---> \x1b[0m ", req.params);
-// console.log("\x1B[33m req.body ---> \x1b[0m ", req.body);
