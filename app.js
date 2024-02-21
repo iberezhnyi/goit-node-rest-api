@@ -36,9 +36,6 @@ app.use((err, _, res, next) => {
 
 const DB_HOST = process.env.DB_HOST;
 
-// const DB_HOST =
-// "mongodb+srv://iberezhnyi:gvzxNXFEHXzLpuyg@cluster0.9cydex4.mongodb.net/db-contacts?retryWrites=true&w=majority";
-
 mongoose
   .connect(DB_HOST)
   .then(() => {
