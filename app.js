@@ -1,7 +1,8 @@
 import express from "express";
+import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
-
+import "dotenv/config";
 import contactsRouter from "./routes/contactsRouter.js";
 
 const app = express();
@@ -33,6 +34,20 @@ app.use((err, _, res, next) => {
   );
 });
 
-app.listen(3000, () => {
-  console.log("Server is running. Use our API on port: 3000");
-});
+const DB_HOST = process.env.DB_HOST;
+
+// const DB_HOST =
+// "mongodb+srv://iberezhnyi:gvzxNXFEHXzLpuyg@cluster0.9cydex4.mongodb.net/db-contacts?retryWrites=true&w=majority";
+
+mongoose
+  .connect(DB_HOST)
+  .then(() => {
+    app.listen(3000, () => {
+      console.log("Server is running. Use our API on port: 3000");
+    });
+    console.log("Database connection successful!");
+  })
+  .catch((error) => {
+    console.log(error);
+    process.exit(1);
+  });
