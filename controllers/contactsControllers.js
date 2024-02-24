@@ -1,9 +1,18 @@
 import HttpError from "../helpers/HttpError.js";
 import { Contact } from "../models/contact.js";
 
-export const getAllContacts = async (_, res, next) => {
+export const getAllContacts = async (req, res, next) => {
   try {
-    const result = await Contact.find({});
+    const { id: owner } = req.user;
+    const { page = 1, limit = 20, favorite = null } = req.query;
+    const skip = (page - 1) * limit;
+
+    const filterOptions = favorite ? { owner, favorite } : { owner };
+
+    const result = await Contact.find(filterOptions, "", {
+      skip,
+      limit,
+    }).populate("owner", "email subscription");
 
     res.send(result);
   } catch (error) {
@@ -27,7 +36,8 @@ export const getOneContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const result = await Contact.create(req.body);
+    const { id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
 
     res.status(201).send(result);
   } catch (error) {

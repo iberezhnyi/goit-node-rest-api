@@ -4,6 +4,8 @@ import morgan from "morgan";
 import cors from "cors";
 import "dotenv/config";
 import contactsRouter from "./routes/contactsRouter.js";
+import authRouter from "./routes/authRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 
 const app = express();
 
@@ -11,6 +13,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/users", authRouter, usersRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((_, res) => {
@@ -18,7 +21,15 @@ app.use((_, res) => {
 });
 
 app.use((err, _, res, next) => {
-  const { status = 500, message } = err;
+  const { message, name, code } = err;
+
+  const isUniqueValueErr =
+    name === "MongoServerError" && code === 11000 ? 409 : 500;
+
+  const { status = isUniqueValueErr } = err;
+
+  console.log(name);
+  console.log(code);
 
   const messageText =
     status === 500 ? `Server error! Details: ${message}` : message;
@@ -34,7 +45,7 @@ app.use((err, _, res, next) => {
   );
 });
 
-const DB_HOST = process.env.DB_HOST;
+const { DB_HOST } = process.env;
 
 mongoose
   .connect(DB_HOST)
